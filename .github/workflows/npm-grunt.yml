@@ -1,28 +1,61 @@
-name: NodeJS with Grunt
+name: Build and Deploy Frontend
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-frontend:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    - name: Build
-      run: |
-        npm install
-        grunt
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Zip contents of dist folder
+        run: |
+          cd dist
+          zip -r ../dist.zip .
+          cd ..
+
+      - name: Upload dist.zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist-zip
+          path: dist.zip
+
+      - name: Delete dist.zip after upload
+        run: rm -f dist.zip
+
+  deploy-frontend:
+    needs: build-frontend
+    runs-on: self-hosted
+    steps:
+      - name: Download dist.zip artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist-zip
+          path: ~/frontend
+
+      - name: Unzip dist.zip directly into public folder and cleanup
+        run: |
+          echo "Listing ~/frontend/public before unzip:"
+          ls -la ~/frontend/public || echo "Folder doesn't exist"
+          
+          echo "Extracting dist.zip into ~/frontend/public..."
+          unzip -o ~/frontend/dist.zip -d ~/frontend/public || (echo "Unzip failed!" && exit 1)
+
+          echo "Deleting dist.zip..."
+          rm -f ~/frontend/dist.zip
+
+          echo "Listing ~/frontend/public after unzip:"
+          ls -la ~/frontend/public
