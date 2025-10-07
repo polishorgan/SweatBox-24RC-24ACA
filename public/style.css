@@ -40,6 +40,26 @@ body {
     text-decoration: none;
 }
 
+.terms {
+    position: fixed;
+    left: 10px;
+    bottom: 30px;
+    
+    color:white;
+    opacity: 50%;
+    text-decoration: none;
+}
+
+.privacy {
+    position: fixed;
+    left: 10px;
+    bottom: 50px;
+    
+    color:white;
+    opacity: 50%;
+    text-decoration: none;
+}
+
 #parent {
     display: flex;
     flex-direction: column;
