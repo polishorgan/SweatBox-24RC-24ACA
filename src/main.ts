@@ -11,9 +11,9 @@ import DisplayControlBar from "./components/DisplayControlBar";
 import AircraftLabel from "./components/AircraftLabel";
 
 // const pollAuthority = "http://localhost:3000";
-const POLL_AUTHORITY = "https://sb.123456321.xyz";
+const POLL_AUTHORITY = "https://sweatbox.atc24.academy";
 const POLL_INTERVAL = 3000;
-const POLL_ROUTES = ["/24aca", "/24aca"];
+const POLL_ROUTES = ["/1", "/2"];
 const ROUTE_SWITCH_DELAY = 1000;
 
 const DOUBLE_CLICK_MS = 300;
